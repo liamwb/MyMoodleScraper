@@ -2,7 +2,14 @@
   <dictionary name="Liam">
     <words>
       <w>chromedriver</w>
+      <w>dropdown</w>
+      <w>dropdowns</w>
+      <w>instancename</w>
+      <w>instancenames</w>
+      <w>lxml</w>
+      <w>multiline</w>
       <w>okta</w>
+      <w>prefs</w>
       <w>signin</w>
     </words>
   </dictionary>
