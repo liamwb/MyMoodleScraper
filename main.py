@@ -81,6 +81,7 @@ def createTempDriver(options, directory):
         "download.default_directory": directory.replace('/', '\\'),  # apparently selenium broke forward slashes
         "download.prompt_for_download": False,  # To auto download files
         "download.directory_upgrade": True,
+        "profile.default_content_settings.popups": 0,
         "plugins.always_open_pdf_externally": True  # It will not show PDF directly in chrome
     })
     return webdriver.Chrome('C:/Users/Liam/Drivers/chromedriver.exe', options=temp_options)
@@ -138,22 +139,7 @@ def scrapeATS2005():
     soup = BeautifulSoup(driver.page_source, 'lxml')
     final_link = soup.find('video').find('source')['src']  # the link is in the source tag, inside the video tag
 
-    # To download a video, we can use the requests library.
-    # To do this, we will need to find the session key that moodle generates when we login. Fortunately, this is
-    # conveniently stored in the logout button. I only realised this because of
-    # https://github.com/harsilspatel/moodle-downloader.
 
-    logout_link = soup.find(class_='menu-action-text', string='Log out').parent['href']
-    sesskey = logout_link[logout_link.find('=') + 1:]
-    if sesskey: print('found session key')
-
-    # now we can download the video with requests
-
-    r = requests.get(url=final_link, auth=(name, sesskey))
-    f = open('test.mp4', 'wb')
-    for chunk in r.iter_content(chunk_size=255):
-        if chunk:
-            f.write(chunk)
 
 # scrapeMAT1830()
 # driver.back()
