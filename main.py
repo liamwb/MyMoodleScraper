@@ -18,7 +18,7 @@ options.add_experimental_option('prefs', {
     "plugins.always_open_pdf_externally": True  # It will not show PDF directly in chrome
 })
 driver = webdriver.Chrome('C:/Users/Liam/Drivers/chromedriver.exe', options=options)
-password, username = [line.strip('\n') for line in open('DETAILS.txt')]
+password, username, name = [line.strip('\n') for line in open('DETAILS.txt')]
 
 
 def backToDashboard():
@@ -149,8 +149,11 @@ def scrapeATS2005():
 
     # now we can download the video with requests
 
-    requests.get(url=final_link, auth=('Liam Wood-Baker', sesskey))
-
+    r = requests.get(url=final_link, auth=(name, sesskey))
+    f = open('test.mp4', 'wb')
+    for chunk in r.iter_content(chunk_size=255):
+        if chunk:
+            f.write(chunk)
 
 # scrapeMAT1830()
 # driver.back()
