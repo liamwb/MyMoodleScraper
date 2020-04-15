@@ -4,7 +4,7 @@ By Liam Wood-Baker, 2020
 """
 import time
 import os
-import urllib.request
+import requests
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -62,9 +62,9 @@ def goToUnit(unit):
             driver.get(button.parent['href'])
 
 
-def doDirectory(week):
+def doDirectory(week, unit_code):
     """creating the directory to save files to, if it already doesn't exist. To be called in a unit's scrape function"""
-    directory = 'C:/Users/Liam/Uni/ATS2005/Week ' + week_number
+    directory = 'C:/Users/Liam/Uni/' + unit_code + '/Week ' + week_number
     print('downloads will go to ' + directory)
     if not os.path.exists(directory):
         os.mkdir(directory)
@@ -88,7 +88,7 @@ def createTempDriver(options, directory):
 
 def scrapeMAT1830():
     """Downloads the two tutorial sheets"""
-    directory = doDirectory(week_number)
+    directory = doDirectory(week_number, 'MAT1830')
     goToUnit('MAT1830')
 
     soup = BeautifulSoup(driver.page_source, 'lxml')  # lxml is an HTML parser
@@ -117,7 +117,7 @@ def scrapeMAT1830():
 
 def scrapeATS2005():
     """Downloads the week's lecture"""
-    directory = doDirectory(week_number)
+    directory = doDirectory(week_number, 'ATS2005')
     goToUnit('ATS2005')
 
     # getting to the right week
@@ -137,22 +137,20 @@ def scrapeATS2005():
     driver.get(video_link)  # get to the page that has the video embedded in it
     soup = BeautifulSoup(driver.page_source, 'lxml')
     final_link = soup.find('video').find('source')['src']  # the link is in the source tag, inside the video tag
-    driver.get(final_link)
 
-    # this doesn't work
-    # urllib.request.urlretrieve(final_link, 'videoname.mp4')
+    # To download a video, we can use the requests library.
+    # To do this, we will need to find the session key that moodle generates when we login. Fortunately, this is
+    # conveniently stored in the logout button. I only realised this because of
+    # https://github.com/harsilspatel/moodle-downloader.
 
-    # this isn't needed if the above doesn't work
-    # # open a window with the correct download directory
-    # temp_driver = createTempDriver(options, directory)
-    # login(temp_driver)
-    #
-    # # open a new tab for the video
-    # temp_driver.execute_script("window.open('');")
-    # temp_driver.switch_to.window(temp_driver.window_handles[1])
-    #
-    # # get to the page which is actually the video
-    # temp_driver.get(final_link)
+    logout_link = soup.find(class_='menu-action-text', string='Log out').parent['href']
+    sesskey = logout_link[logout_link.find('=') + 1:]
+    if sesskey: print('found session key')
+
+    # now we can download the video with requests
+
+    requests.get(url=final_link, auth=('Liam Wood-Baker', sesskey))
+
 
 # scrapeMAT1830()
 # driver.back()
