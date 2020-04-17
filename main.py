@@ -123,9 +123,9 @@ def scrapeMAT1830():
             solutions_link = tag.parent['href']
             print('found tutorial sheet solutions')
 
-    s = createSessionWithCookies()
+    s = createSessionWithCookies()  # s for downloading files
 
-    tutorial_sheet_r = s.get(tutorial_sheet_link).content
+    tutorial_sheet_r = s.get(tutorial_sheet_link).content  # responses
     solutions_r = s.get(solutions_link).content
 
     with open(f'{directory}/Week {week_number} tutorial sheet.pdf', 'wb') as f:
@@ -133,6 +133,8 @@ def scrapeMAT1830():
     with open(f'{directory}/Week {week_number} tutorial sheet solutions.pdf', 'wb') as f:
         f.write(solutions_r)
 
+    driver.back()  # back to the dashboard
+    closeCopyrightWarning()
 
 def scrapeATS2005():
     """Downloads the week's lecture"""
@@ -176,10 +178,8 @@ def scrapeATS2005():
                 i += 1
     print('Finished')
 
+    driver.find_element_by_partial_link_text('Dashboard').click()  # back to the dashboard
+
 
 scrapeMAT1830()
-driver.back()
-closeCopyrightWarning()
-time.sleep(3)
 scrapeATS2005()
-
