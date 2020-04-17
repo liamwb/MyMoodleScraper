@@ -18,7 +18,8 @@ options.add_experimental_option('prefs', {
     "plugins.always_open_pdf_externally": True  # It will not show PDF directly in chrome
 })
 driver = webdriver.Chrome('C:/Users/Liam/Drivers/chromedriver.exe', options=options)
-password, username, name = [line.strip('\n') for line in open('DETAILS.txt')]
+with open('DETAILS.txt') as details:
+    password, username, name = [line.strip('\n') for line in details]
 
 
 def backToDashboard():
@@ -181,4 +182,4 @@ driver.back()
 closeCopyrightWarning()
 time.sleep(3)
 scrapeATS2005()
-driver.
+
