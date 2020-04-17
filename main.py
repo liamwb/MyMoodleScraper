@@ -148,7 +148,7 @@ def scrapeATS2005():
     print('Downloading lecture recording')
     i = 1  # i is a counter to indicate to the user that progress is being made
     r = s.get(final_link, stream=True)  # writing the file
-    with open(f'Week {week_number} lecture.mp4', 'wb') as f:
+    with open(f'{directory}/Week {week_number} lecture.mp4', 'wb') as f:
         for chunk in r.iter_content(chunk_size=1024 * 1024):
             if chunk:
                 f.write(chunk)
