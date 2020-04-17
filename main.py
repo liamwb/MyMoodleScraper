@@ -106,14 +106,18 @@ def scrapeMAT1830():
             solutions_link = tag.parent['href']
             print('found tutorial sheet solutions')
 
-    temp_driver = createTempDriver(options, directory)
-    login(temp_driver)  # now we're logged in in the new window (which has the correct download directory)
+    cookies = driver.get_cookies()
+    s = requests.session()
+    for cookie in cookies:
+        s.cookies.set(cookie['name'], cookie['value'])
 
-    temp_driver.execute_script("window.open('');")
-    temp_driver.switch_to.window(temp_driver.window_handles[1])
-    temp_driver.get(tutorial_sheet_link)  # get the tutorial sheet in a new tab
-    temp_driver.get(solutions_link)  # then the solutions
-    temp_driver.close()  # then close the window
+    tutorial_sheet_r = s.get(tutorial_sheet_link).content
+    solutions_r = s.get(solutions_link).content
+
+    with open(f'{directory}/Week {week_number} tutorial sheet.pdf', 'wb') as f:
+        f.write(tutorial_sheet_r)
+    with open(f'{directory}/Week {week_number} tutorial sheet solutions.pdf', 'wb') as f:
+        f.write(solutions_r)
 
 
 def scrapeATS2005():
@@ -164,8 +168,8 @@ def scrapeATS2005():
 
 
 
-# scrapeMAT1830()
-# driver.back()
-# closeCopyrightWarning()
-# time.sleep(3)
+scrapeMAT1830()
+driver.back()
+closeCopyrightWarning()
+time.sleep(3)
 scrapeATS2005()
