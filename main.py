@@ -87,9 +87,25 @@ def createTempDriver(options, directory):
     return webdriver.Chrome('C:/Users/Liam/Drivers/chromedriver.exe', options=temp_options)
 
 
+def createSessionWithCookies():
+    cookies = driver.get_cookies()  # the cookies include the authorisation key that will grant requests access
+
+    s = requests.session()  # giving requests the cookies
+    for cookie in cookies:
+        s.cookies.set(cookie['name'], cookie['value'])
+    return s
+
+
 def scrapeMAT1830():
     """Downloads the two tutorial sheets"""
     directory = doDirectory(week_number, 'MAT1830')
+
+    # check if the files have already been downloaded
+    if os.path.exists(f'{directory}/Week {week_number} tutorial sheet.pdf') and \
+       os.path.exists(f'{directory}/Week {week_number} tutorial sheet solutions.pdf'):
+        print('found both MAT1830 sheets in ' + directory)
+        return None
+
     goToUnit('MAT1830')
 
     soup = BeautifulSoup(driver.page_source, 'lxml')  # lxml is an HTML parser
@@ -106,10 +122,7 @@ def scrapeMAT1830():
             solutions_link = tag.parent['href']
             print('found tutorial sheet solutions')
 
-    cookies = driver.get_cookies()
-    s = requests.session()
-    for cookie in cookies:
-        s.cookies.set(cookie['name'], cookie['value'])
+    s = createSessionWithCookies()
 
     tutorial_sheet_r = s.get(tutorial_sheet_link).content
     solutions_r = s.get(solutions_link).content
@@ -123,12 +136,13 @@ def scrapeMAT1830():
 def scrapeATS2005():
     """Downloads the week's lecture"""
     directory = doDirectory(week_number, 'ATS2005')
-    goToUnit('ATS2005')
 
     # checking if the week n lecture is already downloaded
     if os.path.exists(f'{directory}/Week {week_number} lecture.mp4'):
         print(f'found {directory}/Week {week_number} lecture.mp4 in {directory}')
         return None
+
+    goToUnit('ATS2005')
 
     # getting to the right week
     soup = BeautifulSoup(driver.page_source, 'lxml')
@@ -148,11 +162,7 @@ def scrapeATS2005():
     soup = BeautifulSoup(driver.page_source, 'lxml')
     final_link = soup.find('video').find('source')['src']  # the link is in the source tag, inside the video tag
 
-    cookies = driver.get_cookies()  # the cookies include the authorisation key that will grant requests access
-
-    s = requests.session()  # giving requests the cookies
-    for cookie in cookies:
-        s.cookies.set(cookie['name'], cookie['value'])
+    s = createSessionWithCookies()
 
     print('Downloading lecture recording')
     i = 1  # i is a counter to indicate to the user that progress is being made
@@ -166,10 +176,9 @@ def scrapeATS2005():
     print('Finished')
 
 
-
-
 scrapeMAT1830()
 driver.back()
 closeCopyrightWarning()
 time.sleep(3)
 scrapeATS2005()
+driver.
