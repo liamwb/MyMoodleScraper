@@ -121,6 +121,11 @@ def scrapeATS2005():
     directory = doDirectory(week_number, 'ATS2005')
     goToUnit('ATS2005')
 
+    # checking if the week n lecture is already downloaded
+    if os.path.exists(f'{directory}/Week {week_number} lecture.mp4'):
+        print(f'found {directory}/Week {week_number} lecture.mp4 in {directory}')
+        return None
+
     # getting to the right week
     soup = BeautifulSoup(driver.page_source, 'lxml')
     dropdowns = soup.findAll('div', class_='arts-banner-dropdown-content')
