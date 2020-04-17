@@ -181,5 +181,4 @@ def scrapeATS2005():
     driver.find_element_by_partial_link_text('Dashboard').click()  # back to the dashboard
 
 
-scrapeMAT1830()
-scrapeATS2005()
+
